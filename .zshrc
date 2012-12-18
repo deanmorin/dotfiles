@@ -32,7 +32,11 @@ export UPDATE_ZSH_DAYS=13
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git svn)
+#plugins=(adb brew git knife svn virtualenvwrapper)
+plugins=(git knife svn virtualenvwrapper)
+
+# zsh-completions (homebrew)
+fpath=(/usr/local/share/zsh-completions $fpath)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -42,6 +46,9 @@ source ~/.profile
 alias s='source ~/.zshrc'
 # TODO find a better solution
 alias ls='/bin/ls -G'
+alias -g airport='/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport'
 
 # Ignore duplicate history entries (but still store them for record-keeping)
 setopt HIST_FIND_NO_DUPS
+
+compdef "_files -W ~/Dropbox/android/sql -/" livedb
