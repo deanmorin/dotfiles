@@ -9,7 +9,7 @@ function backup_dotfile()
 }
 
 echo "> Creating dotfile symlinks"
-dotfiles=(.bashrc .gitconfig .gitignore .oh-my-zsh .profile .zshrc)
+dotfiles=(.bashrc .gitconfig .gitignore .oh-my-zsh .profile .pylintrc .zshrc)
 dotfiles_dir="$(cd "$(dirname "$0")" && pwd)"
 
 for df in ${dotfiles[@]}; do
