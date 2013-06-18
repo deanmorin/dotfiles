@@ -8,6 +8,16 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
+function is_osx()
+{
+    [[ $OSTYPE =~ [Dd]arwin ]] && return 0 || return 1
+}
+
+function has_homebrew()
+{
+    command -v brew &>/dev/null
+}
+
 # colors for OSX
 di=ex   # Directory
 ln=dx   # Symbolic Link
@@ -35,9 +45,8 @@ alias python27='sudo port select --set python python27'
 alias eclimd='/Applications/eclipse/eclimd'
 alias proxy='ssh -fN -D 33033 frasier@deanmorin.me'
 alias scripts='cd ~/Dropbox/scripts/'
-if [[ $OSTYPE =~ [Dd]arwin ]]; then
-    alias qmake='qmake -spec macx-g++'
-fi
+is_osx && alias qmake='qmake -spec macx-g++'
+
 # user specific aliases
 if [ -f ~/.aliases ]; then
     . ~/.aliases
@@ -45,17 +54,20 @@ fi
 
 # path
 userbin=$HOME/bin
-if [[ "$(uname)" = "Darwin" ]] && [ $(which brew) ]; then
+if is_osx && has_homebrew; then
     homebrew=/usr/local/bin:/usr/local/sbin:~/Applications
     gnu="$(brew --prefix coreutils)/libexec/gnubin"
     python=/usr/local/share/python:/usr/local/share/python3
+    node=/usr/local/share/npm/bin
+    PATH=$homebrew:$gnu:$python:$node:$PATH
 fi
-export PATH=$homebrew:$gnu:$python:$userbin:$PATH
+export PATH=$userbin:$PATH
+#is_osx && launchctl setenv PATH $PATH
 
 # python virtualenv variables
 which yum &> /dev/null && wrapper=/usr/bin/virtualenvwrapper.sh
 which aptitude &> /dev/null && wrapper=/usr/local/bin/virtualenvwrapper.sh
-if which brew &> /dev/null; then
+if has_homebrew; then
     osx_version=$(sw_vers -productVersion)
     # I think homebrew has just changed to use system versions for installed
     # packages; may not be version specific
@@ -72,6 +84,12 @@ if [ -f "$wrapper" ]; then
     export PIP_RESPECT_VIRTUALENV=true
 fi
 
+# rbenv setup
+which rbenv &>/dev/null && eval "$(rbenv init - $ZSH_NAME)"
+
+export EDITOR=vim
+export SVN_EDITOR=vim
+
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
@@ -83,4 +101,14 @@ if [ -n "$BASH_VERSION" ]; then
     if [ -f "$HOME/.bashlocal" ]; then
         . "$HOME/.bashlocal"
     fi
+fi
+
+# AWS config
+if [ -f "$HOME/.aws" ]; then
+    . "$HOME/.aws"
+fi
+
+# local shell preferences
+if [ -f "$HOME/.profilelocal" ]; then
+    . "$HOME/.profilelocal"
 fi

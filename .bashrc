@@ -107,7 +107,8 @@ alias ll='ls -l'
 alias la='ls -A'
 
 # better version of cd
-. ~/Dropbox/scripts/sourced_scripts/acd_func.sh
+new_cd=~/Dropbox/scripts/sourced_scripts/acd_func.sh
+[ -f $new_cd ] && . $new_cd
 
 # things to be ignored by bash history
 export HISTIGNORE="ls:pwd:vi:[bf]g:exit"
@@ -128,6 +129,8 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 # homebrew install bash completion
-if [ -f `brew --prefix 2> /dev/null`/etc/bash_completion ]; then
-    . `brew --prefix`/etc/bash_completion
+if [ `which brew &>/dev/null` ]; then
+    if [ -f `brew --prefix 2> /dev/null`/etc/bash_completion ]; then
+        . `brew --prefix`/etc/bash_completion
+    fi
 fi

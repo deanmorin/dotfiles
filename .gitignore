@@ -6,20 +6,26 @@
 #-----------------+
 # Compiled Source |
 #-----------------+ 
-*.com
 *.class
+*.com
 *.dll
 *.exe
 *.o           
-*.so
 *.pyc
+*.so
 
 #--------------------+
 # Logs and Databases |
 #--------------------+
+nohup.out
 *.log
 *.sql
 *.sqlite
+
+#----------------------+
+# Tag Files from ctags |
+#----------------------+
+tags
 
 #--------------------+
 # OS Generated Files |
@@ -28,6 +34,11 @@
 ehthumbs.db
 Icon?
 Thumbs.db
+
+#------------------+
+# Managed Packages |
+#------------------+
+node_modules
 
 #-----------------------+
 # Android Project Files |

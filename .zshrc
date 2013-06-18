@@ -29,26 +29,46 @@ export UPDATE_ZSH_DAYS=13
 # Uncomment following line if you want red dots to be displayed while waiting for completion
 # COMPLETION_WAITING_DOTS="true"
 
+# Need to add before plugins so that virtualenvwrapper can be found in the path
+# on Snow Leopard
+source ~/.profile
+
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-#plugins=(adb brew git knife svn virtualenvwrapper)
-plugins=(git knife svn virtualenvwrapper)
+plugins=(gem git knife virtualenvwrapper)
 
 # zsh-completions (homebrew)
 fpath=(/usr/local/share/zsh-completions $fpath)
 
 source $ZSH/oh-my-zsh.sh
 
-# Customize to your needs...
-source ~/.profile
-
 alias s='source ~/.zshrc'
 # TODO find a better solution
 alias ls='/bin/ls -G'
+alias mv='mv -i'
+alias cp='cp -i'
 alias -g airport='/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport'
+alias pg_start='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start'
 
 # Ignore duplicate history entries (but still store them for record-keeping)
 setopt HIST_FIND_NO_DUPS
+# Save the time and how long a command ran
+setopt EXTENDED_HISTORY
+# Pretty   obvious,  right?
+setopt HIST_REDUCE_BLANKS
 
-compdef "_files -W ~/Dropbox/android/sql -/" livedb
+# ignore binary files in vim autocompletion
+zstyle ':completion:*:*:vi(m|):*' ignored-patterns '*.beam|*.class|*.o|*.pyc'
+
+#=============================================================================
+# -> Mobidia
+#=============================================================================
+# Autocompletion for the 'livedb' command
+compdef "_files -W ~/Dropbox/scripts/work_scripts/sql/android -/" livedb
+# Autocompletion for the 'extract' command
+compdef "_files -W ~/Dropbox/scripts/work_scripts/sql/iphone -/" extractdb
+## Autocompletion for sqliteman
+#compdef "_files -W ~/Shared/temp -/" sqliteman
+alias -g svm='svn://whistler://mdm'
+alias -g svmls='svn ls svm'
