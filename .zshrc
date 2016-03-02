@@ -36,10 +36,13 @@ source ~/.profile
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(gem git knife virtualenvwrapper)
+plugins=(brew brew-cask bundler docker gem git pyenv rbenv)
 
 # zsh-completions (homebrew)
 fpath=(/usr/local/share/zsh-completions $fpath)
+
+# turn off autocorrection
+DISABLE_CORRECTION="true"
 
 source $ZSH/oh-my-zsh.sh
 
@@ -61,14 +64,4 @@ setopt HIST_REDUCE_BLANKS
 # ignore binary files in vim autocompletion
 zstyle ':completion:*:*:vi(m|):*' ignored-patterns '*.beam|*.class|*.o|*.pyc'
 
-#=============================================================================
-# -> Mobidia
-#=============================================================================
-# Autocompletion for the 'livedb' command
-compdef "_files -W ~/Dropbox/scripts/work_scripts/sql/android -/" livedb
-# Autocompletion for the 'extract' command
-compdef "_files -W ~/Dropbox/scripts/work_scripts/sql/iphone -/" extractdb
-## Autocompletion for sqliteman
-#compdef "_files -W ~/Shared/temp -/" sqliteman
-alias -g svm='svn://whistler://mdm'
-alias -g svmls='svn ls svm'
+source $(brew --prefix)/etc/profile.d/z.sh

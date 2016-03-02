@@ -1,19 +1,35 @@
 #!/usr/bin/env bash
+dotfile_dir="$(cd "$(dirname "$0")" && pwd)"
 
-function backup_dotfile()
-{
+
+get_dotfiles() {
+    local dotfiles=$(
+        find $dotfile_dir -maxdepth 1 -type f -name ".*" \
+                -and -not -iname '.DS_Store' \
+                -and -not -iname '.dropbox' \
+                -and -not -iname '*.swp' \
+                -exec basename {} \;
+    )
+    dotfiles="$dotfiles .oh-my-zsh"
+    echo $dotfiles
+}
+
+
+backup_dotfile() {
     dotfile="$1"
     echo "> Backing up existing $dotfile"
     current_date=$(date +"%Y-%m-%d")
     mv $dotfile $dotfile"_"$current_date.bak
 }
 
+
 echo "> Creating dotfile symlinks"
-dotfiles=(.bashrc .gitconfig .gitignore .oh-my-zsh .profile .pylintrc .zshrc)
-dotfiles_dir="$(cd "$(dirname "$0")" && pwd)"
+dotfiles=$(get_dotfiles)
 
 for df in ${dotfiles[@]}; do
-    [ -f "$HOME/$df" ] && [ ! -L "$HOME/$df" ] && backup_dotfile "$HOME/$df"
-    [ -L "$HOME/$df" ] && rm "$HOME/$df"
-    ln -s "$dotfiles_dir/$df" "$HOME/$df"
+    [[ -e "$HOME/$df" ]] && [[ ! -L "$HOME/$df" ]] && backup_dotfile "$HOME/$df"
+    { [[ -L "$HOME/$df" ]] && rm "$HOME/$df"; } || echo $df
+    ln -s "$dotfile_dir/$df" "$HOME/$df"
 done
+
+ln -s "$dotfile_dir/init.el" "$HOME/.emacs.d/"

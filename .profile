@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # ~/.profile: executed by the command interpreter for login shells.
 # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
 # exists.
@@ -8,14 +10,16 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
-function is_osx()
-{
-    [[ $OSTYPE =~ [Dd]arwin ]] && return 0 || return 1
+is_osx() {
+    [[ $OSTYPE =~ [Dd]arwin ]]
 }
 
-function has_homebrew()
-{
-    command -v brew &>/dev/null
+has_homebrew() {
+    [[ -f /usr/local/bin/brew ]]
+}
+
+source_if_exists() {
+    [[ -f $1 ]] && source $1
 }
 
 # colors for OSX
@@ -32,83 +36,40 @@ ds=hx   # Director writable to others, with sticky bit
 dw=hx   # Director writable to others, without sticky bit
 export LSCOLORS="$di$ln$so$pi$ex$bd$cf$eu$eg$ds$dw"
 
-# aliases
-alias s='source ~/.profile'
-alias cp='cp -i'
-alias mv='mv -i'
-alias vi='vim'
-alias pss='ps aux'
-alias gcca='gcc -ansi -W -Wall -pedantic -g'
-alias g++a='g++ -ansi -W -Wall -pedantic -g'
-alias python32='sudo port select --set python python32'
-alias python27='sudo port select --set python python27'
-alias eclimd='/Applications/eclipse/eclimd'
-alias proxy='ssh -fN -D 33033 frasier@deanmorin.me'
-alias scripts='cd ~/Dropbox/scripts/'
-is_osx && alias qmake='qmake -spec macx-g++'
-
-# user specific aliases
-if [ -f ~/.aliases ]; then
-    . ~/.aliases
-fi
-
 # path
 userbin=$HOME/bin
 if is_osx && has_homebrew; then
     homebrew=/usr/local/bin:/usr/local/sbin:~/Applications
-    gnu="$(brew --prefix coreutils)/libexec/gnubin"
-    python=/usr/local/share/python:/usr/local/share/python3
+    coreutils="$(brew --prefix coreutils)/libexec/gnubin"
+    gnused="$(brew --prefix gnu-sed)/libexec/gnubin"
     node=/usr/local/share/npm/bin
-    PATH=$homebrew:$gnu:$python:$node:$PATH
+    PATH=$homebrew::$coreutils:$gnused:$node:$PATH
 fi
 export PATH=$userbin:$PATH
-#is_osx && launchctl setenv PATH $PATH
-
-# python virtualenv variables
-which yum &> /dev/null && wrapper=/usr/bin/virtualenvwrapper.sh
-which aptitude &> /dev/null && wrapper=/usr/local/bin/virtualenvwrapper.sh
-if has_homebrew; then
-    osx_version=$(sw_vers -productVersion)
-    # I think homebrew has just changed to use system versions for installed
-    # packages; may not be version specific
-    if vercomp $osx_version 10.7.0 '<'; then
-        wrapper=/usr/local/share/python/virtualenvwrapper.sh
-    else
-        wrapper=/usr/local/bin/virtualenvwrapper.sh
-    fi
-fi
-if [ -f "$wrapper" ]; then
-    export WORKON_HOME=$HOME/.virtualenvs
-    source "$wrapper"
-    export PIP_VIRTUALENV_BASE=$WORKON_HOME
-    export PIP_RESPECT_VIRTUALENV=true
-fi
 
 # rbenv setup
 which rbenv &>/dev/null && eval "$(rbenv init - $ZSH_NAME)"
+# jenv setup
+which jenv &>/dev/null && eval "$(jenv init -)"
+# docker-machine setup
+# TODO put this bit in an launchctl plist
+which docker-machine &>/dev/null && { [[ $(docker-machine status default) = Running ]] || docker-machine start default; }
+which docker-machine &>/dev/null && eval "$(docker-machine env default)"
 
 export EDITOR=vim
 export SVN_EDITOR=vim
+export JRUBY_OPTS=--debug
+export ARKRC=.ackrc
+export PYENV_ROOT=/usr/local/opt/pyenv
+#export PGSSLMODE=require
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
-    # include .bashrc if it exists
-    if [ -f "$HOME/Dropbox/scripts/setup/.bashrc" ]; then
-	    . "$HOME/Dropbox/scripts/setup/.bashrc"
-    fi
-
-    # run machine specific bash preferences
-    if [ -f "$HOME/.bashlocal" ]; then
-        . "$HOME/.bashlocal"
-    fi
+    source_if_exists "$HOME/Dropbox/scripts/setup/.bashrc"
+    source_if_exists "$HOME/.bashlocal"  # run machine specific bash preferences
 fi
-
-# AWS config
-if [ -f "$HOME/.aws" ]; then
-    . "$HOME/.aws"
-fi
-
-# local shell preferences
-if [ -f "$HOME/.profilelocal" ]; then
-    . "$HOME/.profilelocal"
-fi
+source_if_exists "$HOME/.aliases"      # Aliases
+source_if_exists "$HOME/.dbext"        # Parameters for the dbext vim plugin
+source_if_exists "$HOME/.aws"          # AWS config
+source_if_exists "$HOME/.github"       # Github tokens
+source_if_exists "$HOME/.profilelocal" # Local shell preferences
