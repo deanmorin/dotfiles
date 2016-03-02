@@ -1,0 +1,5 @@
+--ignore-dir=doc
+--ignore-dir=log
+--ignore-dir=tmp
+--ignore-file=is:.gitignore
+--ignore-file=is:tags

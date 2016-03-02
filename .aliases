@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+is_osx() {
+    [[ $OSTYPE =~ [Dd]arwin ]]
+}
+
+alias s='source ~/.profile'
+alias cp='cp -i'
+alias mv='mv -i'
+alias vi='vim'
+alias vcat='vimcat'
+alias pss='ps aux | grep'
+alias gcca='gcc -ansi -W -Wall -pedantic -g'
+alias g++a='g++ -ansi -W -Wall -pedantic -g'
+alias eclimd='/Applications/eclipse/eclimd'
+alias proxy='ssh -fN -D 33033 frasier@deanmorin.me'
+alias scripts='cd ~/Dropbox/scripts/'
+alias crontab='VIM_CRONTAB=true crontab'
+alias msync='rsync -rlpt --progress --exclude "*.swp"'
+alias wikit='pandoc -f markdown -t mediawiki'
+alias ag='ag -s'
+is_osx && alias qmake='qmake -spec macx-g++'
