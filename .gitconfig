@@ -5,12 +5,19 @@
     editor = vim
     filemode = false
     excludesfile = ~/.gitignore
-[merge]
-    tool = vimdiff
 [color]
     ui = always
-[alias]
-    st = status
-    ci = commit
+[diff]
+    ;tool = opendiff
+    tool = vimdiff
 [push]
-   default = tracking
+    default = tracking
+[alias]
+    ci = commit
+    co = checkout
+    dl = difftool HEAD~ HEAD
+    dt = difftool
+    st = status
+    mt = mergetool
+    tg = tag -n
+    ws = rebase --whitespace=fix
