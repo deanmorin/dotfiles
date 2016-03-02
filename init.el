@@ -39,43 +39,39 @@
   :pin melpa-stable)
 
 (use-package clojure-mode
-  :pin melpa-stable
-  :config
-  (defun turn-on-paredit ()
-    (paredit-mode 1))
-  (add-hook 'clojure-mode-hook 'turn-on-paredit))
+  :pin melpa-stable)
 
 (use-package evil
   :pin melpa-stable
-  :init (evil-mode 1)
-  :config
-  (setq-default evil-symbol-word-search t)
-  ;(global-unset-key "H")
-  ;(define-key evil-normal-state-map "H" 'evil-window-left)
-  ;(define-key evil-normal-state-map "L" 'evil-window-right)
-  ;(define-key evil-normal-state-map "K" 'evil-window-up)
-  ;(define-key evil-normal-state-map "J" 'evil-window-down)
-  )
+  :init (evil-mode 1))
+
+(use-package evil-commentary
+  :pin melpa-stable
+  :init (evil-commentary-mode))
 
 (use-package evil-leader
   :pin melpa-stable
   :init (global-evil-leader-mode 1)
   :config
-  (evil-leader/set-leader ",")
+  (defun open-init-file ()
+    (interactive)
+    (find-file user-init-file))
+
+  (evil-leader/set-leader "<SPC>")
   (evil-leader/set-key
-    "h"  'kill-this-buffer
+    "c"  'mode-specific-command-prefix
+    "hf" 'describe-function
+    "hv" 'describe-variable
+    "hk" 'describe-key
+    "init" 'open-init-file
+    "k"  'kill-this-buffer
     "t"  'projectile-find-file
-    "wd" 'delete-trailing-whitespace
-    "cc" 'evilnc-comment-or-uncomment-lines
-    "cu" 'evilnc-comment-or-uncomment-lines
-    ))
+    "wd" 'delete-trailing-whitespace))
+
 
 (use-package evil-surround
   :pin melpa
   :init (global-evil-surround-mode 1))
-
-(use-package evil-nerd-commenter
-  :pin melpa-stable)
 
 (use-package evil-numbers
   :pin melpa-stable
@@ -85,30 +81,17 @@
 
 (use-package exec-path-from-shell
   :pin melpa-stable
-  :init
-  (when (memq window-system '(mac ns))
-    (exec-path-from-shell-initialize))
+  :init (when (memq window-system '(mac ns))
+          (exec-path-from-shell-initialize))
   :config
-  (defun env-names ()
-    (let* ((env-string (shell-command-to-string "env"))
-           (env-list (split-string env-string "\n")))
-      (mapcar (lambda (s) (replace-regexp-in-string "=.*$" "" s)) env-list)))
+  (defun source-file-and-get-envs (filename)
+    (let* ((cmd (concat ". " filename "; env"))
+           (env-str (shell-command-to-string cmd))
+           (env-lines (split-string env-str "\n"))
+           (envs (mapcar (lambda (s) (replace-regexp-in-string "=.*$" "" s)) env-lines)))
+      (delete "" envs)))
 
-  (defun read-lines-without-blank-lines-or-comments (filename)
-    (with-temp-buffer
-      (insert-file-contents filename)
-      (delete-blank-lines)
-      (flush-lines "^\s*#")
-      (split-string (buffer-string) "\n" t)))
-
-  (defun extract-env (s)
-    (replace-regexp-in-string "=.*$" ""
-                              (replace-regexp-in-string "^export " "" s)))
-
-  (defun read-envs-from-file (filename)
-    (mapcar 'extract-env (read-lines-without-blank-lines-or-comments filename)))
-
-  (exec-path-from-shell-copy-envs (read-envs-from-file "~/.profilelocal")))
+  (exec-path-from-shell-copy-envs (source-file-and-get-envs "~/.profile")))
 
 (use-package flx-ido
   :pin melpa-stable
@@ -128,7 +111,8 @@
   :init (global-nlinum-mode 1))
 
 (use-package paredit
-  :pin melpa-stable)
+  :pin melpa-stable
+  :diminish paredit-mode)
 
 (use-package projectile
   :pin melpa-stable
@@ -141,8 +125,7 @@
   :pin melpa-stable
   :diminish undo-tree-mode
   :bind ("<f5>" . undo-tree-visualize)
-  :init
-  (global-undo-tree-mode 1)
+  :init (global-undo-tree-mode 1)
   :config
   (setq undo-tree-auto-save-history t
         backup-directory-alist '(("." . "~/.emacs.d/undo"))))
@@ -172,6 +155,13 @@
                               (sql-mode)
                               (sql-highlight-postgres-keywords))))
 
+(defun turn-on-lisp-modes-and-options ()
+  (paredit-mode 1)
+  (setq evil-symbol-word-search t))
+
+(add-hook 'clojure-mode-hook 'turn-on-lisp-modes-and-options)
+(add-hook 'emacs-lisp-mode-hook 'turn-on-lisp-modes-and-options)
+
 ;;; ---------------------------------------------------------------------------
 ;;; OCD
 ;;; ---------------------------------------------------------------------------
@@ -190,3 +180,8 @@
 (global-set-key (kbd "C-u") 'Control-X-prefix)
 ;; Easier to reach than M-x in Dvorak
 (global-set-key (kbd "M-u") 'execute-extended-command)
+
+(global-set-key (kbd "<M-s-left>") 'windmove-left)
+(global-set-key (kbd "<M-s-right>") 'windmove-right)
+(global-set-key (kbd "<M-s-up>") 'windmove-up)
+(global-set-key (kbd "<M-s-down>") 'windmove-down)
