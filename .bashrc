@@ -67,19 +67,12 @@ prompt_vcs()
     prompt_git || prompt_svn
 }
 
-[[ "$color_prompt" = yes ]] && green='\[\e[1;32m\]' && dflt_color='\[\e[0m\]'
+[[ "$color_prompt" = yes ]] && green='\[\e[1;32m\]' && default_color='\[\e[0m\]'
 [[ "$ssh_session" = yes ]] && user_host='[\u@\h]'
 abs_path='\w'
-vcs_info="${dflt_color}\$(prompt_vcs)${green}"
+vcs_info="${default_color}\$(prompt_vcs)${green}"
 
-export PS1="${green}${user_host}${abs_path}${vcs_info}$ ${dflt_color}"
-
-unset abs_path
-unset color_prompt
-unset dflt_color
-unset green
-unset ssh_session
-unset user_host
+export PS1="${green}${user_host}${abs_path}${vcs_info}$ ${default_color}"
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
