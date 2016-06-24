@@ -7,10 +7,6 @@ ZSH=$HOME/.oh-my-zsh
 # time that oh-my-zsh is loaded.
 ZSH_THEME="dean"
 
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
 # Set to this to use case-sensitive completion
 CASE_SENSITIVE="true"
 
@@ -46,14 +42,6 @@ DISABLE_CORRECTION="true"
 
 source $ZSH/oh-my-zsh.sh
 
-alias s='source ~/.zshrc'
-# TODO find a better solution
-alias ls='/bin/ls -G'
-alias mv='mv -i'
-alias cp='cp -i'
-alias -g airport='/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport'
-alias pg_start='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start'
-
 # Ignore duplicate history entries (but still store them for record-keeping)
 setopt HIST_FIND_NO_DUPS
 # Save the time and how long a command ran
@@ -65,3 +53,5 @@ setopt HIST_REDUCE_BLANKS
 zstyle ':completion:*:*:vi(m|):*' ignored-patterns '*.beam|*.class|*.o|*.pyc'
 
 source $(brew --prefix)/etc/profile.d/z.sh
+
+alias ls='/bin/ls -G'

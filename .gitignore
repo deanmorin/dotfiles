@@ -1,9 +1,14 @@
 #--------------+
-# Backup Files |
+# Vim Files |
 #--------------+
 *.swn
 *.swo
 *.swp
+
+#--------------+
+# Emacs Files |
+#--------------+
+*.~undo-tree~
 
 #-----------------+
 # Compiled Source |
@@ -19,6 +24,7 @@
 #--------------------+
 # Logs and Databases |
 #--------------------+
+metastore.db
 nohup.out
 *.log
 *.sqlite

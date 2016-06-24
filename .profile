@@ -22,6 +22,16 @@ source_if_exists() {
     [[ -f $1 ]] && source $1
 }
 
+export EDITOR=vim
+export SVN_EDITOR=vim
+export JRUBY_OPTS=--debug
+export ARKRC=.ackrc
+export PYENV_ROOT=/usr/local/opt/pyenv
+export PSQL_EDITOR=vim
+export AWS_CREDENTIAL_FILE=~/.aws_credentials
+export GOPATH="$HOME/dev/go"
+#export PGSSLMODE=require
+
 # colors for OSX
 di=ex   # Directory
 ln=dx   # Symbolic Link
@@ -43,7 +53,8 @@ if is_osx && has_homebrew; then
     coreutils="$(brew --prefix coreutils)/libexec/gnubin"
     gnused="$(brew --prefix gnu-sed)/libexec/gnubin"
     node=/usr/local/share/npm/bin
-    PATH=$homebrew::$coreutils:$gnused:$node:$PATH
+    go="$GOPATH/bin"
+    PATH=$go:$homebrew::$coreutils:$gnused:$node:$PATH
 fi
 export PATH=$userbin:$PATH
 
@@ -55,13 +66,6 @@ which jenv &>/dev/null && eval "$(jenv init -)"
 # TODO put this bit in an launchctl plist
 which docker-machine &>/dev/null && { [[ $(docker-machine status default) = Running ]] || docker-machine start default; }
 which docker-machine &>/dev/null && eval "$(docker-machine env default)"
-
-export EDITOR=vim
-export SVN_EDITOR=vim
-export JRUBY_OPTS=--debug
-export ARKRC=.ackrc
-export PYENV_ROOT=/usr/local/opt/pyenv
-#export PGSSLMODE=require
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then

@@ -17,40 +17,34 @@
              '("melpa-stable" . "https://stable.melpa.org/packages/"))
 
 (package-initialize)
+(package-refresh-contents)
 
 (unless (package-installed-p 'use-package)
-  (package-refresh-contents)
   (package-install 'use-package))
 
 (with-eval-after-load 'use-package
   (setq use-package-always-ensure t))
-        ;use-package-always-pin 'melpa-stable))
-;; (setq use-package-always-ensure t
-;;(setq use-package-always-pin "melpa-stable")
 
 ;;; ---------------------------------------------------------------------------
 ;;; Packages
 ;;; ---------------------------------------------------------------------------
+(use-package evil
+  :init (evil-mode 1))
+
 (use-package auto-complete
-  :pin melpa-stable
   :config (ac-config-default))
 
 (use-package cider
-  :pin melpa-stable)
+  :config
+  (setq cider-prompt-for-symbol nil)
+  (define-key evil-normal-state-map (kbd "C-=") 'cider-find-var))
 
-(use-package clojure-mode
-  :pin melpa-stable)
-
-(use-package evil
-  :pin melpa-stable
-  :init (evil-mode 1))
+(use-package clojure-mode)
 
 (use-package evil-commentary
-  :pin melpa-stable
   :init (evil-commentary-mode))
 
 (use-package evil-leader
-  :pin melpa-stable
   :init (global-evil-leader-mode 1)
   :config
   (defun open-init-file ()
@@ -59,6 +53,7 @@
 
   (evil-leader/set-leader "<SPC>")
   (evil-leader/set-key
+    "b"  'ido-switch-buffer
     "c"  'mode-specific-command-prefix
     "hf" 'describe-function
     "hv" 'describe-variable
@@ -66,7 +61,9 @@
     "init" 'open-init-file
     "k"  'kill-this-buffer
     "t"  'projectile-find-file
-    "wd" 'delete-trailing-whitespace))
+    "wd" 'delete-trailing-whitespace)
+
+  (add-to-list 'evil-emacs-state-modes 'repl-mode))
 
 
 (use-package evil-surround
@@ -106,6 +103,20 @@
   ;; Tell emacs where is your personal elisp lib dir
   (add-to-list 'load-path "~/.emacs.d/lisp/")
 
+(use-package guide-key
+  :pin melpa-stable
+  :diminish guide-key-mode
+  :init (guide-key-mode 1)
+  :config
+  (setq guide-key/guide-key-sequence t
+        guide-key/popup-window-position :bottom))
+
+;; (use-package helm
+;;   :pin melpa-stable
+;;   :diminish helm-mode
+;;   :bind ("M-x" . helm-M-x)
+;;   :init (helm-mode 1))
+
 (use-package nlinum
   :pin melpa
   :init (global-nlinum-mode 1))
@@ -128,7 +139,11 @@
   :init (global-undo-tree-mode 1)
   :config
   (setq undo-tree-auto-save-history t
-        backup-directory-alist '(("." . "~/.emacs.d/undo"))))
+        undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+
+  (defadvice undo-tree-make-history-save-file-name
+      (after undo-tree activate)
+    (setq ad-return-value (concat ad-return-value ".gz"))))
 
 (use-package yaml-mode
   :pin melpa-stable)
@@ -174,7 +189,8 @@
 
 (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/autosave" t)))
 
-(setq vc-follow-symlinks t)
+(setq vc-follow-symlinks t
+      require-final-newline t)
 
 ;; Easier to reach than C-x in Dvorak, and C-x is decrement in Vim
 (global-set-key (kbd "C-u") 'Control-X-prefix)
